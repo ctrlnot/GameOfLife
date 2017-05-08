@@ -4,3 +4,15 @@
     outline: none;
     box-sizing: border-box;
 }
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+#content {
+    position: relative;
+    z-index: 1;
+}

@@ -1,7 +1,13 @@
 function setup() {
-    createCanvas(600, 400);
+    var myCanvas = createCanvas(windowWidth, windowHeight);
+    myCanvas.parent('content');
+    background(51);
 }
 
 function draw() {
-    background(51);
+    
+}
+
+function windowResized () {
+    resizeCanvas(windowWidth, windowHeight);
 }
