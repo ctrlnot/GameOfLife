@@ -2,7 +2,7 @@ function Cell(x, y) {
     this.x = x;
     this.y = y;
     this.curr = 0;
-    this.prev = 0;
+    this.prev = this.curr;
 }
 
 Cell.prototype.generate = function() {
@@ -18,14 +18,19 @@ Cell.prototype.generate = function() {
             let g = grid[x][y];
             let neighbors = 0;
 
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    neighbors += grid[(x + i + cols) % cols][(y + j + rows) % rows].prev;
+                }
+            }
+
             neighbors -= g.prev; // Minus the current cell's state
 
             // Rules of life
-            if (g.state === 1 && neighbors < 2) g.state = 0;            // Dies because of loneliness :(
-            else if (g.state === 1 && neighbors > 3) g.state = 0;       // Dies because of overpopulation :(
-            else if (g.state === 0 && neighbors === 3) g.state = 1;     // Reproduce
+            if (g.curr == 1 && neighbors < 2) g.curr = 0;            // Dies because of loneliness :(
+            else if (g.curr == 1 && neighbors > 3) g.curr = 0;       // Dies because of overpopulation :(
+            else if (g.curr == 0 && neighbors == 3) g.curr = 1;     // Reproduce
         }
-        
     }
 }
 
@@ -33,7 +38,7 @@ Cell.prototype.hover = function(mx, my) {
     var tmx = floor(mx / w);
     var tmy = floor(my / w);
 
-    if(tmx === this.x && tmy === this.y) {
+    if(tmx == this.x && tmy == this.y) {
         stroke(255, 255, 0);
     } else {
         stroke(255, 50);
@@ -41,6 +46,9 @@ Cell.prototype.hover = function(mx, my) {
 }
 
 Cell.prototype.show = function() {
-    if (this.curr === 1) fill(255, 255, 0, 210); else noFill();
+    if (this.prev == 0 && this.curr == 1) fill(255, 255, 0, 128);
+    else if (this.curr == 1) fill(255, 255, 0, 230);
+    else if (this.prev == 1 && this.curr == 0) fill(255, 255, 0, 50);
+    else noFill();
     rect(this.x * w, this.y * w, w, w);
 }

@@ -11,8 +11,8 @@ var grid = [];
 var start = false;
 
 function setup() {
-   // createCanvas(1300, 650);
-   createCanvas(100, 100);
+    // createCanvas(1300, 650);
+    createCanvas(600, 600);
 
     rows = floor(height / w);
     cols = floor(width / w);
@@ -24,7 +24,9 @@ function setup() {
         }
     }
 
-    console.log(grid);
+    frameRate(30);
+
+    // console.log((0 + (-1) + 10) % 10);
 }
 
 function draw() {
@@ -32,10 +34,13 @@ function draw() {
 
     for (let x = 0; x < cols; x++) {
         for (let y = 0; y < rows; y++) {
+            if (start) grid[x][y].generate();
             grid[x][y].hover(mouseX, mouseY);
             grid[x][y].show();
         }
     }
+
+    // console.log(start);
 }
 
 function mousePressed() {
