@@ -1,54 +1,57 @@
-function Cell(x, y) {
-  this.x = x;
-  this.y = y;
-  this.curr = 0;
-  this.prev = this.curr;
-}
+class Cell {
+  constructor(i, j) {
+    this.i = i
+    this.j = j
 
-Cell.prototype.generate = function() {
-  // Save previous state
-  for (let x = 0; x < cols; x++) {
-    for (let y = 0; y < rows; y++) {
-      grid[x][y].prev = grid[x][y].curr;
-    }
+    this.state = floor(random(2))
+    this.prevState = this.state
   }
 
-  for (let x = 0; x < cols; x++) {
-    for (let y = 0; y < rows; y++) {
-      let g = grid[x][y];
-      let neighbors = 0;
+  calculateNeighbors() {
+    let total = 0
 
-      for (let i = -1; i <= 1; i++) {
-        for (let j = -1; j <= 1; j++) {
-          neighbors += grid[(x + i + cols) % cols][(y + j + rows) % rows].prev;
-        }
+    // calculate neighbors as in
+    for(let i = -1; i <= 1; i++) {
+      for(let j = -1; j <= 1; j++) {
+        total += grid[(this.i + i + COLS) % COLS][(this.j + j + ROWS) % ROWS].prevState
       }
+    }
 
-      neighbors -= g.prev; // Minus the current cell's state
+    // minus itself
+    total -= this.prevState
 
-      // Rules of life
-      if (g.curr == 1 && neighbors < 2) g.curr = 0;            // Dies because of loneliness :(
-      else if (g.curr == 1 && neighbors > 3) g.curr = 0;       // Dies because of overpopulation :(
-      else if (g.curr == 0 && neighbors == 3) g.curr = 1;     // Reproduce
+    return total
+  }
+
+  nextGeneration() {
+    this.prevState = this.state // update the previous state
+    const neighbors = this.calculateNeighbors()
+
+    // if cell is dead but has 3 neighbors.. make it alive!
+    if(this.state === 0 && neighbors === 3) {
+      this.state = 1
+    } 
+
+    // if < 2 neighbors.. it dies of loneliness :(
+    // if > 3 neighbors.. it dies of overpopulation
+    if(this.state === 1 && (neighbors < 2 || neighbors > 3)) {
+      this.state = 0
     }
   }
-}
 
-Cell.prototype.hover = function(mx, my) {
-  var tmx = floor(mx / w);
-  var tmy = floor(my / w);
+  show() {
+    let x = this.i * CELL_SIZE
+    let y = this.j * CELL_SIZE
 
-  if(tmx == this.x && tmy == this.y) {
-    stroke(255, 255, 0);
-  } else {
-    stroke(255, 50);
+    if(this.state) {
+      fill(255)
+      stroke(51)
+      rect(x, y, CELL_SIZE - 1, CELL_SIZE - 1)
+    }
   }
-}
 
-Cell.prototype.show = function() {
-  if (this.prev == 0 && this.curr == 1) fill(255, 255, 0, 128);
-  else if (this.curr == 1) fill(255, 255, 0, 230);
-  else if (this.prev == 1 && this.curr == 0) fill(255, 255, 0, 50);
-  else noFill();
-  rect(this.x * w, this.y * w, w, w);
+  run() {
+    this.show()
+    this.nextGeneration()
+  }
 }
