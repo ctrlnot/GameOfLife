@@ -3,17 +3,23 @@ class Cell {
     this.i = i
     this.j = j
 
-    this.state = floor(random(2))
+    this.state = this.random()
     this.prevState = this.state
+  }
+
+  random() {
+    // 10% chance of being alive initially
+    return random(1) < 0.1 ? 1 : 0
   }
 
   calculateNeighbors() {
     let total = 0
 
-    // calculate neighbors as in
-    for(let i = -1; i <= 1; i++) {
-      for(let j = -1; j <= 1; j++) {
-        total += grid[(this.i + i + COLS) % COLS][(this.j + j + ROWS) % ROWS].prevState
+    // calculate neighbors that the edges is included as the other side neighbors (wut?)
+    for(let i = -1; i < 2; i++) {
+      for(let j = -1; j < 2; j++) {
+        const g = grid[(this.i + i + COLS) % COLS][(this.j + j + ROWS) % ROWS]
+        total += g.prevState
       }
     }
 
@@ -23,8 +29,11 @@ class Cell {
     return total
   }
 
+  preservePreviousState() {
+    this.prevState = this.state
+  }
+
   nextGeneration() {
-    this.prevState = this.state // update the previous state
     const neighbors = this.calculateNeighbors()
 
     // if cell is dead but has 3 neighbors.. make it alive!
@@ -52,6 +61,6 @@ class Cell {
 
   run() {
     this.show()
-    this.nextGeneration()
+    if(start) this.nextGeneration()
   }
 }
